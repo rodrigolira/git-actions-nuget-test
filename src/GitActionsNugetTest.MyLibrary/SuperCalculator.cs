@@ -8,7 +8,7 @@ namespace GitActionsNugetTest.MyLibrary
     {
         public int Sum(int x, int y)
         {
-            return x + y;
+            return 0;//x + y;
         }
     }
 }
