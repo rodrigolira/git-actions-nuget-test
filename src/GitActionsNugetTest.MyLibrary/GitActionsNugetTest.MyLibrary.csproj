@@ -1,7 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Authors>Rodrigo Lira</Authors>
+    <Description>SuperCalculator class to sum two integers.</Description>
+    <PackageProjectUrl>https://github.com/rodrigolira/git-actions-nuget-test</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/rodrigolira/git-actions-nuget-test</RepositoryUrl>
   </PropertyGroup>
 
 </Project>
