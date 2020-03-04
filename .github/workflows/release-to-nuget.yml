@@ -23,3 +23,12 @@ jobs:
 
     - name: Running Unit Tests
       run: dotnet test
+
+    - name: Getting the Release Version
+      id: get_release_version
+      if: github.event_name == 'release'
+      run: echo ::set-output name=tag::${GITHUB_REF/refs\/tags\//}
+
+    - name: Echoing the Version
+      if: github.event_name == 'release'
+      run: echo ${{ steps.get_release_version.outputs.tag }}
