@@ -20,17 +20,50 @@ jobs:
       with:
         dotnet-version: 3.1.100
 
-    - name: Building
+    - name: Build
       run: dotnet build --configuration Release
 
-    - name: Running Unit Tests
+    - name: Run Unit Tests
       run: dotnet test
 
-    - name: Getting the Release Version
+    - name: Get the Release Version
       id: get_release_version
       if: github.event_name == 'release'
       run: echo ::set-output name=tag::${GITHUB_REF/refs\/tags\//}
-
-    - name: Echoing the Version
+    
+    - name: Build NuGet Packages
       if: github.event_name == 'release'
-      run: echo ${{ steps.get_release_version.outputs.tag }}
+      run: dotnet pack --configuration Release -o ./packages --no-build -p:PackageVersion=${{ steps.get_release_version.outputs.tag }}
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v1.0.0
+      if: github.event_name == 'release'
+      with:
+        name: nupkg
+        path: ./packages
+        
+  publish:
+    
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: github.event_name == 'release'
+
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifacts@v1.0.0
+        with:
+          name: nupkg
+          
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-vesion: 3.1.100
+          source-url: https://nuget.pkg.github.com/rodrigolira/index.json
+          owner: rodrigolira
+        env:
+          NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish NuGet Packages
+        run: dotnet nuget push -s https://nuget.pkg.github.com/rodrigolira/index.json -k $NUGET_AUTH_TOKEN ./nupkg/*.nupkg --skip-duplicate
+        env:
+          NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
